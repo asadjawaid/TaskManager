@@ -17,10 +17,9 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-public class Person {
+public class Person extends AbstractDateTime {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "person_id", nullable = false)
     private Long id;
 
     @Column(name = "first_name", nullable = false)
@@ -32,22 +31,17 @@ public class Person {
     @Column(name = "email", nullable = false, unique = true)
     private String email;
 
-    @CreatedDate
-    @Column(name = "created_at", nullable = false, updatable = false)
-    private Date createdAt;
-
-    @LastModifiedDate
-    @Column(name = "updated_at", nullable = false)
-    private Date updatedAt;
-
     @OneToOne(mappedBy = "person")
     private UserCredentials credentials;
 
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinTable(
             name = "person_role",
-            joinColumns = @JoinColumn(name = "person_id", referencedColumnName = "person_id"),
-            inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "role_id")
+            joinColumns = @JoinColumn(name = "person_id", referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id")
     )
     private Set<Role> roles = new HashSet<>();
+
+    @OneToMany(mappedBy = "person", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<Board> boards = new HashSet<>();
 }

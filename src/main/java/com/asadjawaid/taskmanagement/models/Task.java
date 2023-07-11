@@ -6,10 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
 
-import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -18,10 +15,9 @@ import java.util.Set;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Task {
+public class Task extends AbstractDateTime {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "task_id", nullable = false)
     private Long id;
 
     @Column(name = "name", nullable = false)
@@ -31,24 +27,22 @@ public class Task {
     private String description;
 
     @Enumerated(EnumType.STRING)
+    @Column(columnDefinition = "VARCHAR(25) DEFAULT 'NEW'")
     private TaskStatus status;
-
-    @CreatedDate
-    @Column(name = "created_at", nullable = false, updatable = false)
-    private Date createdAt;
-
-    @LastModifiedDate
-    @Column(name = "updated_at", nullable = false)
-    private Date updatedAt;
 
     @OneToMany(mappedBy = "task", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Comment> comments = new HashSet<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "priority_id", nullable = false)
+    @JoinColumn(name = "priority_id", referencedColumnName = "id", nullable = false)
     private Priority priority;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "category_id", nullable = false)
+    @JoinColumn(name = "category_id", referencedColumnName = "id", nullable = false)
     private Category category;
+
+    // A task can have single a checklist
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "checklist_id", referencedColumnName = "id")
+    private Checklist checklist;
 }

@@ -15,10 +15,9 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-public class UserCredentials {
+public class UserCredentials extends AbstractDateTime {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "credential_id", nullable = false)
     private Long id;
 
     @Column(name = "username", nullable = false, unique = true)
@@ -27,15 +26,7 @@ public class UserCredentials {
     @Column(name = "password", nullable = false)
     private String password;
 
-    @CreatedDate
-    @Column(name = "created_at", nullable = false, updatable = false)
-    private Date createdAt;
-
-    @LastModifiedDate
-    @Column(name = "updated_at", nullable = false)
-    private Date updatedAt;
-
     @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "person_id", referencedColumnName = "person_id")
+    @JoinColumn(name = "person_id", referencedColumnName = "id")
     private Person person;
 }
